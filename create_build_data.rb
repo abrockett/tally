@@ -7,11 +7,11 @@ require 'date'
 # @config[:workspace]  = "Hellfish DemoData Only"
 # @config[:project]    = "AlanDemoData"
 
-@config = {:base_url => "https://abrockett.testn.f4tech.com/slm"}
-@config[:username]   = "abrockett@rallydev.com"
-@config[:password]   = "Password"
-@config[:workspace]  = "Rally"
-@config[:project]    = "Tally"
+@config = {:base_url => "https://.testn.f4tech.com/slm"}
+@config[:username]   = ""
+@config[:password]   = ""
+@config[:workspace]  = ""
+@config[:project]    = ""
 
 def show_some_values(title, builddef)
   values = ["Name", "Description", "Project", "CreationDate"]
@@ -24,7 +24,7 @@ def show_some_values(title, builddef)
   end
 end
 
-def find_build_defs()
+def find_build_def()
   query = RallyAPI::RallyQuery.new()
   query.type = "builddefinition"
   query.fetch = "Name,CreationDate,Description,Project"
@@ -34,11 +34,19 @@ def find_build_defs()
   query.project_scope_down = false
   query.order = "CreationDate Desc"
   query.query_string = "(Name = \"Tally Builds\")"
+  bd = ""
 
   results = @rally_api.find(query)
-  results.each do |result|
-    puts result["_ref"]
-  end
+  builddef = results[0]
+  builddef.read
+
+  #results.each do |builddef|
+  #  bd = builddef["_ref"]
+  #  builddef.read
+  # end
+
+  builddef
+
 end
 
 def create_build_defs
@@ -54,26 +62,42 @@ def create_build_defs
 end
 
 def create_builds(builddef)
-  fields = {}
-  fields["BuildDefinition"] = builddef["_ref"]
-  fields["Duration"] = 1.5
-  fields["Start"] = DateTime.new(2019, 8, 10, 4, 10, 9).iso8601
-  fields["Status"] = "SUCCESS"
-
-  new_build = @rally_api.create("build", fields)
-  puts new_build["_ref"] + " ... " + new_build["BuildDefinition"]._ref
+  for i in 1..26 do
+     
+    fields = {}
+    fields["BuildDefinition"] = builddef["_ref"]
+    fields["Duration"] = i * 0.5
+    fields["Start"] = DateTime.new(2022, 5, i, 4, 10, 9).iso8601
+    if i % 3 == 1
+      fields["Status"] = "SUCCESS"
+    elsif i % 3 == 0
+      fields["Status"] = "FAILURE"
+   else
+    fields["Status"] = "INCOMPLETE"
+   end
+    
+    new_build = @rally_api.create("build", fields)
+    puts new_build["_ref"] + " ... " + new_build["BuildDefinition"]._ref     
+  end
 end
 
 begin
   @rally_api = RallyAPI::RallyRestJson.new(@config)
   @workspace = @rally_api.find_workspace(@config[:workspace])
   @project   = @rally_api.find_project(@workspace, @config[:project])
-  #puts @workspace._ref
-  #puts @project._ref
+  puts @workspace._ref
+  puts @project._ref
 
-  builddef = create_build_defs
+  #builddef = create_build_defs
+  builddef = find_build_def
+
   create_builds(builddef)
-  find_build_defs
+
+  puts "-------------------------------"
+  builddef.Builds.each do |build|
+    puts build._ref
+    puts build.Status
+  end
 
 rescue Exception => boom
   puts "Rescued #{boom.class}"
