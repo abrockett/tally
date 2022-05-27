@@ -11,7 +11,7 @@ require 'date'
 @config[:username]   = ""
 @config[:password]   = ""
 @config[:workspace]  = ""
-@config[:project]    = ""
+@config[:project]    = "Proof"
 
 def show_some_values(title, builddef)
   values = ["Name", "Description", "Project", "CreationDate"]
@@ -62,19 +62,19 @@ def create_build_defs
 end
 
 def create_builds(builddef)
-  for i in 1..26 do
+  for i in 9..26 do
      
     fields = {}
     fields["BuildDefinition"] = builddef["_ref"]
     fields["Duration"] = i * 0.5
-    fields["Start"] = DateTime.new(2022, 5, i, 4, 10, 9).iso8601
+    fields["Start"] = DateTime.new(2022, 5, i-2, 4, 10, 9).iso8601
     if i % 3 == 1
       fields["Status"] = "SUCCESS"
-    elsif i % 3 == 0
+    elsif i % 3 == 2
       fields["Status"] = "FAILURE"
-   else
-    fields["Status"] = "INCOMPLETE"
-   end
+    else
+      fields["Status"] = "UNKNOWN"
+    end
     
     new_build = @rally_api.create("build", fields)
     puts new_build["_ref"] + " ... " + new_build["BuildDefinition"]._ref     
