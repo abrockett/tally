@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- Copyright (c) 2010 Rally Software Development Corp. All rights reserved -->
+<html>
+
+<head>
+  <title>Create Build Health Data</title>
+  <meta name="Name" content="Create Build Health Data" />
+  <meta name="Version" content="2020.1" />
+  <meta name="Vendor" content="Rally Software" />
+  <script type="text/javascript" src="/apps/1.26/sdk.js"></script>
+  <script type="text/javascript">
+
+    function createData(b, args) {
+      console.log("Clicked!");
+      var rallyDataSource = new rally.sdk.data.RallyDataSource('__WORKSPACE_OID__',
+        '__PROJECT_OID__',
+        '__PROJECT_SCOPING_UP__',
+        '__PROJECT_SCOPING_DOWN__');
+
+      createBuildDef();
+
+      function createBuildDef() {
+        rallyDataSource.create("builddefinition",
+          {
+            Name: "Hellfish",
+            Description: "Hellfish Builds",
+            Project: __PROJECT_OID__
+          },
+          onCreateComplete);
+
+        function onCreateComplete(object, warnings) {
+          console.log(object._ref);
+        }
+      }
+    }
+
+    function onLoad() {
+      var config = {
+        text: "Create Data",
+        value: "createData"
+      };
+
+      var button = new rally.sdk.ui.basic.Button(config);
+      button.display("buttonDiv", createData);
+    }
+
+    rally.addOnLoad(onLoad);
+  </script>
+</head>
+
+<body>
+  <div id="buttonDiv"></div>
+</body>
+
+</html>

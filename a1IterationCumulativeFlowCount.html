@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+   <meta name="Name" content="Component Example: Standard Report">
+   <script type="text/javascript" src="/apps/1.26/sdk.js"></script>
+   <script type="text/javascript">
+     function initPage() {
+       var config = {
+           report: rally.sdk.ui.StandardReport.IterationCumulativeFlowDiagram,
+           width : 800,
+           height: 400,
+         };
+       rally.sdk.ui.StandardReport.IterationCumulativeFlowDiagram = 11;
+
+       var report = new rally.sdk.ui.StandardReport(config);
+       report.display("aDiv");
+     }
+
+     rally.addOnLoad(initPage);
+   </script>
+</head>
+<body>
+   <div id="aDiv"></div>
+</body>
+</html>
